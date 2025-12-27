@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
       DanmakuApiToken,
       TMDBApiKey,
       TMDBProxy,
+      BannerDataSource,
       PansouApiUrl,
       PansouUsername,
       PansouPassword,
@@ -80,6 +81,7 @@ export async function POST(request: NextRequest) {
       DanmakuApiToken: string;
       TMDBApiKey?: string;
       TMDBProxy?: string;
+      BannerDataSource?: string;
       PansouApiUrl?: string;
       PansouUsername?: string;
       PansouPassword?: string;
@@ -120,6 +122,7 @@ export async function POST(request: NextRequest) {
       typeof DanmakuApiToken !== 'string' ||
       (TMDBApiKey !== undefined && typeof TMDBApiKey !== 'string') ||
       (TMDBProxy !== undefined && typeof TMDBProxy !== 'string') ||
+      (BannerDataSource !== undefined && typeof BannerDataSource !== 'string') ||
       typeof EnableComments !== 'boolean' ||
       (CustomAdFilterCode !== undefined && typeof CustomAdFilterCode !== 'string') ||
       (CustomAdFilterVersion !== undefined && typeof CustomAdFilterVersion !== 'number') ||
@@ -172,6 +175,7 @@ export async function POST(request: NextRequest) {
       DanmakuApiToken,
       TMDBApiKey,
       TMDBProxy,
+      BannerDataSource,
       PansouApiUrl,
       PansouUsername,
       PansouPassword,

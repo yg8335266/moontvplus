@@ -327,6 +327,7 @@ interface SiteConfig {
   DanmakuApiToken: string;
   TMDBApiKey?: string;
   TMDBProxy?: string;
+  BannerDataSource?: string;
   PansouApiUrl?: string;
   PansouUsername?: string;
   PansouPassword?: string;
@@ -5414,6 +5415,7 @@ const SiteConfigComponent = ({
     DanmakuApiToken: '87654321',
     TMDBApiKey: '',
     TMDBProxy: '',
+    BannerDataSource: 'TMDB',
     PansouApiUrl: '',
     PansouUsername: '',
     PansouPassword: '',
@@ -5501,6 +5503,7 @@ const SiteConfigComponent = ({
         DanmakuApiToken: config.SiteConfig.DanmakuApiToken || '87654321',
         TMDBApiKey: config.SiteConfig.TMDBApiKey || '',
         TMDBProxy: config.SiteConfig.TMDBProxy || '',
+        BannerDataSource: config.SiteConfig.BannerDataSource || 'TMDB',
         PansouApiUrl: config.SiteConfig.PansouApiUrl || '',
         PansouUsername: config.SiteConfig.PansouUsername || '',
         PansouPassword: config.SiteConfig.PansouPassword || '',
@@ -5973,6 +5976,29 @@ const SiteConfigComponent = ({
         </div>
         <p className='mt-1 text-xs text-gray-500 dark:text-gray-400'>
           启用后搜索结果将实时流式返回,提升用户体验。
+        </p>
+      </div>
+
+      {/* 轮播图数据源 */}
+      <div>
+        <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+          轮播图数据源
+        </label>
+        <select
+          value={siteSettings.BannerDataSource || 'TMDB'}
+          onChange={(e) =>
+            setSiteSettings((prev) => ({
+              ...prev,
+              BannerDataSource: e.target.value,
+            }))
+          }
+          className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent'
+        >
+          <option value='TMDB'>TMDB</option>
+          <option value='TX'>TX</option>
+        </select>
+        <p className='mt-1 text-xs text-gray-500 dark:text-gray-400'>
+          选择首页轮播图的数据来源
         </p>
       </div>
 

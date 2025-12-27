@@ -10,9 +10,15 @@ interface BannerCarouselProps {
   autoPlayInterval?: number; // 自动播放间隔（毫秒）
 }
 
+// 扩展TMDBItem类型以支持TX数据源的额外字段
+interface BannerItem extends TMDBItem {
+  subtitle?: string; // TX数据源的子标题
+  tags?: string[]; // TX数据源的标签
+}
+
 export default function BannerCarousel({ autoPlayInterval = 5000 }: BannerCarouselProps) {
   const router = useRouter();
-  const [items, setItems] = useState<TMDBItem[]>([]);
+  const [items, setItems] = useState<BannerItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
@@ -28,6 +34,17 @@ export default function BannerCarousel({ autoPlayInterval = 5000 }: BannerCarous
   // 跳转到播放页面
   const handlePlay = (title: string) => {
     router.push(`/play?title=${encodeURIComponent(title)}`);
+  };
+
+  // 获取图片URL（处理TX完整URL和TMDB路径）
+  const getImageUrl = (path: string | null) => {
+    if (!path) return '';
+    // 如果是完整URL（TX数据源），直接返回
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    // 否则使用TMDB的URL拼接
+    return getTMDBImageUrl(path, 'original');
   };
 
   // 获取热门内容
@@ -205,7 +222,7 @@ export default function BannerCarousel({ autoPlayInterval = 5000 }: BannerCarous
             }`}
           >
             <Image
-              src={getTMDBImageUrl(item.backdrop_path || item.poster_path, 'original')}
+              src={getImageUrl(item.backdrop_path || item.poster_path)}
               alt={item.title}
               fill
               className="object-cover"
@@ -225,16 +242,28 @@ export default function BannerCarousel({ autoPlayInterval = 5000 }: BannerCarous
           <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">
             {currentItem.title}
           </h2>
-          
+
           <div className="flex items-center gap-2 md:gap-3 text-sm md:text-base text-white/90 flex-wrap">
-            <span className="px-2 py-1 bg-yellow-500 text-black font-semibold rounded">
-              {currentItem.vote_average.toFixed(1)}
-            </span>
-            {getGenreNames(currentItem.genre_ids, 3).map(genre => (
-              <span key={genre} className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-sm">
-                {genre}
+            {currentItem.vote_average > 0 && (
+              <span className="px-2 py-1 bg-yellow-500 text-black font-semibold rounded">
+                {currentItem.vote_average.toFixed(1)}
               </span>
-            ))}
+            )}
+            {/* 显示TX数据源的标签 */}
+            {currentItem.tags && currentItem.tags.length > 0 ? (
+              currentItem.tags.slice(0, 3).map((tag, index) => (
+                <span key={index} className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-sm">
+                  {tag}
+                </span>
+              ))
+            ) : (
+              /* 显示TMDB数据源的类型标签 */
+              getGenreNames(currentItem.genre_ids, 3).map(genre => (
+                <span key={genre} className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-sm">
+                  {genre}
+                </span>
+              ))
+            )}
             {currentItem.release_date && (
               <span>{currentItem.release_date}</span>
             )}
