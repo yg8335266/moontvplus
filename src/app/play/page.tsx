@@ -496,10 +496,14 @@ function PlayPageClient() {
 
     // 只在切换到不同视频时重新加载页面（title变化）
     // 换源（source/id变化）由播放器自己处理，不需要刷新页面
-    if (urlTitle && urlTitle !== videoTitle) {
+    // 如果正在换源，不应该刷新页面
+    if (urlTitle && urlTitle !== videoTitle && !isSourceChangingRef.current) {
       console.log('[PlayPage] Title changed, reloading page');
       window.location.href = window.location.href;
     }
+
+    // 重置换源标记
+    isSourceChangingRef.current = false;
   }, [searchParams, videoTitle]);
 
   const currentSourceRef = useRef(currentSource);
@@ -508,6 +512,7 @@ function PlayPageClient() {
   const videoYearRef = useRef(videoYear);
   const detailRef = useRef<SearchResult | null>(detail);
   const currentEpisodeIndexRef = useRef(currentEpisodeIndex);
+  const isSourceChangingRef = useRef(false); // 标记是否正在换源
 
   // 同步最新值到 refs
   useEffect(() => {
@@ -2633,6 +2638,9 @@ function PlayPageClient() {
     newTitle: string
   ) => {
     try {
+      // 标记正在换源，防止 title 变化触发页面刷新
+      isSourceChangingRef.current = true;
+
       // 显示换源加载状态
       setVideoLoadingStage('sourceChanging');
       setIsVideoLoading(true);
@@ -2726,6 +2734,7 @@ function PlayPageClient() {
       newUrl.searchParams.set('source', newSource);
       newUrl.searchParams.set('id', newId);
       newUrl.searchParams.set('year', newDetail.year);
+      newUrl.searchParams.set('title', newDetail.title || newTitle);
       window.history.replaceState({}, '', newUrl.toString());
 
       setVideoTitle(newDetail.title || newTitle);
